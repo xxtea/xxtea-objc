@@ -7,9 +7,9 @@ int main(int argc, const char * argv[]) {
         NSString *text = @"Hello World! 你好，中国！";
         NSString *key = @"1234567890";
         NSString *encrypt_data = [XXTEA encryptStringWithBase64Encoding:text stringKey:key];
-        NSData *decrypt_data = [XXTEA decryptBase64EncodedString:encrypt_data stringKey:key];
+        NSString *decrypt_data = [XXTEA decryptBase64EncodedStringToString:encrypt_data stringKey:key];
         NSLog(@"%@", encrypt_data);
-        if (strncmp([text UTF8String], decrypt_data.bytes, decrypt_data.length) == 0) {
+        if ([text isEqual:decrypt_data]) {
             NSLog(@"success!");
         }
         else {
