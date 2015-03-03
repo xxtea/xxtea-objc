@@ -224,18 +224,66 @@ uint8_t * xxtea_decrypt_ubyte(const uint8_t * data, size_t len, const uint8_t * 
 
 @implementation XXTEA
 
-+ (NSData *) encrypt:(NSData *)data withKey:(NSData *)key {
++ (NSData *) encrypt:(NSData *)data key:(NSData *)key {
     size_t out_len;
     FIXED_KEY
     void * bytes = xxtea_encrypt_ubyte(data.bytes, data.length, fixed_key, &out_len);
     return [NSData dataWithBytesNoCopy:bytes length:out_len freeWhenDone:YES];
 }
-
-+ (NSData *) decrypt:(NSData *)data withKey:(NSData *)key {
++ (NSData *) encrypt:(NSData *)data stringKey:(NSString *)key {
+    return [self encrypt:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
+}
++ (NSString *) encryptWithBase64Encoding:(NSData *)data key:(NSData *)key {
+    return [[self encrypt:data key:key] base64EncodedStringWithOptions:0];
+}
++ (NSString *) encryptWithBase64Encoding:(NSData *)data stringKey:(NSString *)key {
+    return [[self encrypt:data stringKey:key] base64EncodedStringWithOptions:0];
+}
++ (NSData *) encryptString:(NSString *)data key:(NSData *)key {
+    return [self encrypt:[data dataUsingEncoding:NSUTF8StringEncoding] key:key];
+}
++ (NSData *) encryptString:(NSString *)data stringKey:(NSString *)key {
+    return [self encrypt:[data dataUsingEncoding:NSUTF8StringEncoding] stringKey:key];
+}
++ (NSString *) encryptStringWithBase64Encoding:(NSString *)data key:(NSData *)key {
+    return [self encryptWithBase64Encoding:[data dataUsingEncoding:NSUTF8StringEncoding] key:key];
+}
++ (NSString *) encryptStringWithBase64Encoding:(NSString *)data stringKey:(NSString *)key {
+    return [self encryptWithBase64Encoding:[data dataUsingEncoding:NSUTF8StringEncoding] stringKey:key];
+}
++ (NSData *) decrypt:(NSData *)data key:(NSData *)key {
     size_t out_len;
     FIXED_KEY
     void * bytes = xxtea_decrypt_ubyte(data.bytes, data.length, fixed_key, &out_len);
+    if (bytes == NULL) return nil;
     return [NSData dataWithBytesNoCopy:bytes length:out_len freeWhenDone:YES];
+}
++ (NSData *) decrypt:(NSData *)data stringKey:(NSString *)key {
+    return [self decrypt:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
+}
++ (NSData *) decryptBase64EncodedString:(NSString *)data key:(NSData *)key {
+    NSData * tmp = [[NSData alloc] initWithBase64EncodedString:data options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    if (tmp == nil) return nil;
+    return [self decrypt:tmp key:key];
+}
++ (NSData *) decryptBase64EncodedString:(NSString *)data stringKey:(NSString *)key {
+    return [self decryptBase64EncodedString:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
+}
++ (NSString *) decryptToString:(NSData *)data key:(NSData *)key {
+    NSData * tmp = [self decrypt:data key:key];
+    if (tmp == nil) return nil;
+    return [[NSString alloc] initWithData:tmp encoding:NSUTF8StringEncoding];
+}
++ (NSString *) decryptToString:(NSData *)data stringKey:(NSString *)key {
+    return [self decryptToString:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
+}
++ (NSString *) decryptBase64EncodedStringToString:(NSString *)data key:(NSData *)key {
+    NSData * tmp = [[NSData alloc] initWithBase64EncodedString:data options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    if (tmp == nil) return nil;
+    return [self decryptToString:tmp key:key];
+}
++ (NSString *) decryptBase64EncodedStringToString:(NSString *)data stringKey:(NSString *)key {
+    return [self decryptBase64EncodedStringToString:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 @end
@@ -243,11 +291,11 @@ uint8_t * xxtea_decrypt_ubyte(const uint8_t * data, size_t len, const uint8_t * 
 @implementation NSData (XXTEA)
 
 - (NSData *) xxteaEncrypt:(NSData *)key {
-    return [XXTEA encrypt:self withKey:key];
+    return [XXTEA encrypt:self key:key];
 }
 
 - (NSData *) xxteaDecrypt:(NSData *)key {
-    return [XXTEA decrypt:self withKey:key];
+    return [XXTEA decrypt:self key:key];
 }
 
 @end

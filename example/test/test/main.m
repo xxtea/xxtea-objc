@@ -5,10 +5,10 @@
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         NSString *text = @"Hello World! 你好，中国！";
-        NSData *key = [@"1234567890" dataUsingEncoding:NSASCIIStringEncoding];
-        NSData *encrypt_data = [[text dataUsingEncoding:NSUTF8StringEncoding] xxteaEncrypt:key];
-        NSData *decrypt_data = [encrypt_data xxteaDecrypt:key];
-        NSLog(@"%@", [encrypt_data base64EncodedStringWithOptions: NSDataBase64Encoding64CharacterLineLength]);
+        NSString *key = @"1234567890";
+        NSString *encrypt_data = [XXTEA encryptStringWithBase64Encoding:text stringKey:key];
+        NSData *decrypt_data = [XXTEA decryptBase64EncodedString:encrypt_data stringKey:key];
+        NSLog(@"%@", encrypt_data);
         if (strncmp([text UTF8String], decrypt_data.bytes, decrypt_data.length) == 0) {
             NSLog(@"success!");
         }
