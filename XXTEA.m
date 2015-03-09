@@ -10,7 +10,7 @@
 |                                                          |
 | Code Authors: Chen fei <cf850118@163.com>                |
 |               Ma Bingyao <mabingyao@gmail.com>           |
-| LastModified: Mar 3, 2015                                |
+| LastModified: Mar 9, 2015                                |
 |                                                          |
 \**********************************************************/
 
@@ -25,19 +25,9 @@
     memcpy(fixed_key, key.bytes, key.length);\
     for (i = key.length; i < 16; ++i) fixed_key[i] = 0;\
 
-/**
- * Function: xxtea_to_uint_array
- * @data:    Data to be converted
- * @len:     Length of the data to be converted
- * @inc_len: Including the length of the information?
- * @out_len: Pointer to output length variable
- * Returns:  UInt array or %NULL on failure
- *
- * Caller is responsible for freeing the returned buffer.
- */
-uint32_t * xxtea_to_uint_array(const uint8_t * data, size_t len, int inc_len, size_t * out_len) {
+static uint32_t * xxtea_to_uint_array(const uint8_t * data, size_t len, int inc_len, size_t * out_len) {
     uint32_t *out;
-    size_t i, n;
+    size_t n;
 
     n = (((len & 3) == 0) ? (len >> 2) : ((len >> 2) + 1));
 
@@ -52,41 +42,39 @@ uint32_t * xxtea_to_uint_array(const uint8_t * data, size_t len, int inc_len, si
         if (!out) return NULL;
         *out_len = n;
     }
-
-    for (i = 0; i < len; ++i) {
+#if defined(BYTE_ORDER) && (BYTE_ORDER == LITTLE_ENDIAN)
+    memcpy(out, data, len);
+#else
+    for (size_t i = 0; i < len; ++i) {
         out[i >> 2] |= (uint32_t)data[i] << ((i & 3) << 3);
     }
+#endif
 
     return out;
 }
 
-/**
- * Function: xxtea_to_ubyte_array
- * @data:    Data to be converted
- * @len:     Length of the data to be converted
- * @inc_len: Included the length of the information?
- * @out_len: Pointer to output length variable
- * Returns:  UByte array or %NULL on failure
- *
- * Caller is responsible for freeing the returned buffer.
- */
-uint8_t * xxtea_to_ubyte_array(const uint32_t * data, size_t len, int inc_len, size_t * out_len) {
+static uint8_t * xxtea_to_ubyte_array(const uint32_t * data, size_t len, int inc_len, size_t * out_len) {
     uint8_t *out;
-    size_t i, m, n;
+    size_t m, n;
 
     n = len << 2;
 
     if (inc_len) {
         m = data[len - 1];
-        if (m > n) return NULL;
+        n -= 4;
+        if ((m < n - 3) || (m > n)) return NULL;
         n = m;
     }
 
     out = (uint8_t *)malloc(n + 1);
 
-    for (i = 0; i < n; ++i) {
+#if defined(BYTE_ORDER) && (BYTE_ORDER == LITTLE_ENDIAN)
+    memcpy(out, data, n);
+#else
+    for (size_t i = 0; i < n; ++i) {
         out[i] = (uint8_t)(data[i >> 2] >> ((i & 3) << 3));
     }
+#endif
 
     out[n] = '\0';
     *out_len = n;
@@ -94,14 +82,7 @@ uint8_t * xxtea_to_ubyte_array(const uint32_t * data, size_t len, int inc_len, s
     return out;
 }
 
-/**
- * Function: xxtea_uint_encrypt
- * @data:    Data to be encrypted
- * @len:     Length of the data to be encrypted
- * @key:     Symmetric key
- * Returns:  Encrypted data
- */
-uint32_t * xxtea_uint_encrypt(uint32_t * data, size_t len, uint32_t * key) {
+static uint32_t * xxtea_uint_encrypt(uint32_t * data, size_t len, uint32_t * key) {
     uint32_t n = (uint32_t)len - 1;
     uint32_t z = data[n], y = data[0], p, q = 6 + 52 / (n + 1), sum = 0, e;
 
@@ -123,14 +104,7 @@ uint32_t * xxtea_uint_encrypt(uint32_t * data, size_t len, uint32_t * key) {
     return data;
 }
 
-/**
- * Function: xxtea_uint_decrypt
- * @data:    Data to be decrypted
- * @len:     Length of the data to be decrypted
- * @key:     Symmetric key
- * Returns:  Decrypted data
- */
-uint32_t * xxtea_uint_decrypt(uint32_t * data, size_t len, uint32_t * key) {
+static uint32_t * xxtea_uint_decrypt(uint32_t * data, size_t len, uint32_t * key) {
     uint32_t n = (uint32_t)len - 1;
     uint32_t z = data[n], y = data[0], p, q = 6 + 52 / (n + 1), sum = q * DELTA, e;
 
@@ -152,17 +126,7 @@ uint32_t * xxtea_uint_decrypt(uint32_t * data, size_t len, uint32_t * key) {
     return data;
 }
 
-/**
- * Function: xxtea_encrypt_ubyte
- * @data:    Data to be encrypted
- * @len:     Length of the data to be encrypted
- * @key:     Symmetric key
- * @out_len: Pointer to output length variable
- * Returns:  Encrypted data or %NULL on failure
- *
- * Caller is responsible for freeing the returned buffer.
- */
-uint8_t * xxtea_encrypt_ubyte(const uint8_t * data, size_t len, const uint8_t * key, size_t * out_len) {
+static uint8_t * xxtea_ubyte_encrypt(const uint8_t * data, size_t len, const uint8_t * key, size_t * out_len) {
     uint8_t *out;
     uint32_t *data_array, *key_array;
     size_t data_len, key_len;
@@ -186,17 +150,7 @@ uint8_t * xxtea_encrypt_ubyte(const uint8_t * data, size_t len, const uint8_t * 
     return out;
 }
 
-/**
- * Function: xxtea_decrypt_ubyte
- * @data:    Data to be decrypted
- * @len:     Length of the data to be decrypted
- * @key:     Symmetric key
- * @out_len: Pointer to output length variable
- * Returns:  Decrypted data or %NULL on failure
- *
- * Caller is responsible for freeing the returned buffer.
- */
-uint8_t * xxtea_decrypt_ubyte(const uint8_t * data, size_t len, const uint8_t * key, size_t * out_len) {
+static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uint8_t * key, size_t * out_len) {
     uint8_t *out;
     uint32_t *data_array, *key_array;
     size_t data_len, key_len;
@@ -227,7 +181,7 @@ uint8_t * xxtea_decrypt_ubyte(const uint8_t * data, size_t len, const uint8_t * 
 + (NSData *) encrypt:(NSData *)data key:(NSData *)key {
     size_t out_len;
     FIXED_KEY
-    void * bytes = xxtea_encrypt_ubyte(data.bytes, data.length, fixed_key, &out_len);
+    void * bytes = xxtea_ubyte_encrypt(data.bytes, data.length, fixed_key, &out_len);
     return [NSData dataWithBytesNoCopy:bytes length:out_len freeWhenDone:YES];
 }
 + (NSData *) encrypt:(NSData *)data stringKey:(NSString *)key {
@@ -254,7 +208,7 @@ uint8_t * xxtea_decrypt_ubyte(const uint8_t * data, size_t len, const uint8_t * 
 + (NSData *) decrypt:(NSData *)data key:(NSData *)key {
     size_t out_len;
     FIXED_KEY
-    void * bytes = xxtea_decrypt_ubyte(data.bytes, data.length, fixed_key, &out_len);
+    void * bytes = xxtea_ubyte_decrypt(data.bytes, data.length, fixed_key, &out_len);
     if (bytes == NULL) return nil;
     return [NSData dataWithBytesNoCopy:bytes length:out_len freeWhenDone:YES];
 }
