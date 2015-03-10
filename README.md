@@ -6,6 +6,8 @@ XXTEA is a fast and secure encryption algorithm. This is a XXTEA library for Obj
 
 It is different from the original XXTEA encryption algorithm. It encrypts and decrypts NSData instead of 32bit integer array, and the key is also the NSData.
 
+In addition to providing the API of NSData encryption and decryption, it also provides some methods to handle NSString and Base64 encode.
+
 ## Installation
 
 ```sh
