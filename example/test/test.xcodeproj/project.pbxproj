@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9B0C4D321AA5B6A5009F237B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0C4D311AA5B6A5009F237B /* main.m */; };
-		9B0C4D3A1AA5B704009F237B /* XXTEA.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0C4D391AA5B704009F237B /* XXTEA.m */; };
+		9B2431F51B6D057B006A375F /* XXTEA.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2431F41B6D057B006A375F /* XXTEA.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +26,8 @@
 /* Begin PBXFileReference section */
 		9B0C4D2E1AA5B6A5009F237B /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B0C4D311AA5B6A5009F237B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		9B0C4D381AA5B704009F237B /* XXTEA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XXTEA.h; path = ../../../XXTEA.h; sourceTree = "<group>"; };
-		9B0C4D391AA5B704009F237B /* XXTEA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XXTEA.m; path = ../../../XXTEA.m; sourceTree = "<group>"; };
+		9B2431F31B6D057B006A375F /* XXTEA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XXTEA.h; path = ../../../src/XXTEA.h; sourceTree = "<group>"; };
+		9B2431F41B6D057B006A375F /* XXTEA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XXTEA.m; path = ../../../src/XXTEA.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +60,8 @@
 		9B0C4D301AA5B6A5009F237B /* test */ = {
 			isa = PBXGroup;
 			children = (
-				9B0C4D381AA5B704009F237B /* XXTEA.h */,
-				9B0C4D391AA5B704009F237B /* XXTEA.m */,
+				9B2431F31B6D057B006A375F /* XXTEA.h */,
+				9B2431F41B6D057B006A375F /* XXTEA.m */,
 				9B0C4D311AA5B6A5009F237B /* main.m */,
 			);
 			path = test;
@@ -122,7 +122,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B0C4D3A1AA5B704009F237B /* XXTEA.m in Sources */,
+				9B2431F51B6D057B006A375F /* XXTEA.m in Sources */,
 				9B0C4D321AA5B6A5009F237B /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -237,6 +237,7 @@
 				9B0C4D371AA5B6A5009F237B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

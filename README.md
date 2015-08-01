@@ -1,5 +1,14 @@
 # XXTEA for Objective-C
 
+<a href="https://github.com/xxtea/">
+    <img src="https://avatars1.githubusercontent.com/u/6683159?v=3&s=86" alt="XXTEA logo" title="XXTEA" align="right" />
+</a>
+
+[![Join the chat at https://gitter.im/xxtea/xxtea-objc](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/xxtea/xxtea-objc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![CocoaPods](https://img.shields.io/cocoapods/v/xxtea.svg)](https://cocoapods.org/pods/xxtea)
+[![CocoaPods](https://img.shields.io/cocoapods/l/xxtea.svg)](https://cocoapods.org/pods/xxtea)
+[![CocoaPods](https://img.shields.io/cocoapods/p/xxtea.svg)](https://cocoapods.org/pods/xxtea)
+
 ## Introduction
 
 XXTEA is a fast and secure encryption algorithm. This is a XXTEA library for Objective-C.
