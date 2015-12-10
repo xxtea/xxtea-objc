@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "xxtea"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "XXTEA for Objective-C"
 
   s.description  = <<-DESC
@@ -74,7 +74,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/xxtea/xxtea-objc.git", :tag => "v1.0.0" }
+  s.source       = { :git => "https://github.com/xxtea/xxtea-objc.git", :tag => "v1.0.1" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
