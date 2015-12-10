@@ -10,7 +10,7 @@
 |                                                          |
 | Code Authors: Chen fei <cf850118@163.com>                |
 |               Ma Bingyao <mabingyao@gmail.com>           |
-| LastModified: Mar 10, 2015                               |
+| LastModified: Dec 10, 2015                               |
 |                                                          |
 \**********************************************************/
 
@@ -22,8 +22,11 @@
 #define FIXED_KEY \
     size_t i;\
     uint8_t fixed_key[16];\
-    memcpy(fixed_key, key.bytes, key.length);\
-    for (i = key.length; i < 16; ++i) fixed_key[i] = 0;\
+    if (key.length < 16) {\
+        memcpy(fixed_key, key.bytes, key.length);\
+        for (i = key.length; i < 16; ++i) fixed_key[i] = 0;\
+    }\
+    else memcpy(fixed_key, key.bytes, 16);\
 
 static uint32_t * xxtea_to_uint_array(const uint8_t * data, size_t len, int inc_len, size_t * out_len) {
     uint32_t *out;
