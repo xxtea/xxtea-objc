@@ -10,7 +10,7 @@
 |                                                          |
 | Code Authors: Chen fei <cf850118@163.com>                |
 |               Ma Bingyao <mabingyao@gmail.com>           |
-| LastModified: Dec 10, 2015                               |
+| LastModified: Jun 14, 2020                               |
 |                                                          |
 \**********************************************************/
 
@@ -65,7 +65,7 @@ static uint8_t * xxtea_to_ubyte_array(const uint32_t * data, size_t len, int inc
     if (inc_len) {
         m = data[len - 1];
         n -= 4;
-        if ((m < n - 3) || (m > n)) return NULL;
+        if ((m != n) && ((m < n - 3) || (m > n))) return NULL;
         n = m;
     }
 
@@ -133,8 +133,6 @@ static uint8_t * xxtea_ubyte_encrypt(const uint8_t * data, size_t len, const uin
     uint8_t *out;
     uint32_t *data_array, *key_array;
     size_t data_len, key_len;
-
-    if (!len) return NULL;
 
     data_array = xxtea_to_uint_array(data, len, 1, &data_len);
     if (!data_array) return NULL;
