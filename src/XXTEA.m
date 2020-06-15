@@ -212,32 +212,25 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
     size_t out_len;
     FIXED_KEY
     void * bytes = xxtea_ubyte_decrypt(data.bytes, data.length, fixed_key, &out_len);
-    if (bytes == NULL) return nil;
     return [NSData dataWithBytesNoCopy:bytes length:out_len freeWhenDone:YES];
 }
 + (NSData *) decrypt:(NSData *)data stringKey:(NSString *)key {
     return [self decrypt:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
 }
 + (NSData *) decryptBase64String:(NSString *)data key:(NSData *)key {
-    NSData * tmp = [[NSData alloc] initWithBase64EncodedString:data options:NSDataBase64DecodingIgnoreUnknownCharacters];
-    if (tmp == nil) return nil;
-    return [self decrypt:tmp key:key];
+    return [self decrypt:[[NSData alloc] initWithBase64EncodedString:data options:NSDataBase64DecodingIgnoreUnknownCharacters] key:key];
 }
 + (NSData *) decryptBase64String:(NSString *)data stringKey:(NSString *)key {
     return [self decryptBase64String:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
 }
 + (NSString *) decryptToString:(NSData *)data key:(NSData *)key {
-    NSData * tmp = [self decrypt:data key:key];
-    if (tmp == nil) return nil;
-    return [[NSString alloc] initWithData:tmp encoding:NSUTF8StringEncoding];
+    return [[NSString alloc] initWithData:[self decrypt:data key:key] encoding:NSUTF8StringEncoding];
 }
 + (NSString *) decryptToString:(NSData *)data stringKey:(NSString *)key {
     return [self decryptToString:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
 }
 + (NSString *) decryptBase64StringToString:(NSString *)data key:(NSData *)key {
-    NSData * tmp = [[NSData alloc] initWithBase64EncodedString:data options:NSDataBase64DecodingIgnoreUnknownCharacters];
-    if (tmp == nil) return nil;
-    return [self decryptToString:tmp key:key];
+    return [self decryptToString:[[NSData alloc] initWithBase64EncodedString:data options:NSDataBase64DecodingIgnoreUnknownCharacters] key:key];
 }
 + (NSString *) decryptBase64StringToString:(NSString *)data stringKey:(NSString *)key {
     return [self decryptBase64StringToString:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
