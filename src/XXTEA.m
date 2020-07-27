@@ -220,7 +220,6 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
     NSData * encrypt_data = [self encrypt:data key:key];
     return [self convertBytesToHex:encrypt_data];
 }
-}
 + (NSString *)encryptToHexString: (NSData *)data stringKey:(NSString *)key {
     NSData * encrypt_data = [self encrypt:data stringKey:key];
     return [self convertBytesToHex:encrypt_data];
@@ -280,15 +279,15 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
 }
 + (NSData *) decryptHexString:(NSString *)data stringKey:(NSString *)key {
     NSData * bytesData = [self convertHexToBytes:data];
-    return [self decrypt:originalHashData stringKey:key];
+    return [self decrypt:bytesData stringKey:key];
 }
 + (NSString *) decryptHexStringToString:(NSString *)data key:(NSData *)key {
     NSData * bytesData = [self convertHexToBytes:data];
-    return [self decryptToString: data key:key];
+    return [self decryptToString:bytesData key:key];
 }
 + (NSString *) decryptHexStringToString:(NSString *)data stringKey:(NSString *)key {
     NSData * bytesData = [self convertHexToBytes:data];
-    return [self decryptToString: data stringKey:key];
+    return [self decryptToString:bytesData stringKey:key];
 }
 
 @end
