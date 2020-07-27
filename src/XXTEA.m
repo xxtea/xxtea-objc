@@ -189,6 +189,15 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
 }
 + (NSData *) encrypt:(NSData *)data stringKey:(NSString *)key {
     return [self encrypt:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
+}  
++ (NSString *)encryptWithHexString: (NSString *)data stringKey:(NSString *)key {
+    NSData * encrypt_data = [XXTEA encryptString:data stringKey:key];
+    const unsigned char *dataBytes = [encrypt_data bytes];
+    NSMutableString *hexString = [NSMutableString stringWithCapacity:[encrypt_data length] * 2];
+    for (int i=0; i<[encrypt_data length]; ++i) {
+        [hexString appendFormat:@"%02lX", (unsigned long)dataBytes[i]];
+    }
+    return hexString;
 }
 + (NSString *) encryptToBase64String:(NSData *)data key:(NSData *)key {
     return [[self encrypt:data key:key] base64EncodedStringWithOptions:0];
