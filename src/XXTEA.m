@@ -190,15 +190,6 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
 + (NSData *) encrypt:(NSData *)data stringKey:(NSString *)key {
     return [self encrypt:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
 }  
-+ (NSString *)encryptWithHexString: (NSString *)data stringKey:(NSString *)key {
-    NSData * encrypt_data = [XXTEA encryptString:data stringKey:key];
-    const unsigned char *dataBytes = [encrypt_data bytes];
-    NSMutableString *hexString = [NSMutableString stringWithCapacity:[encrypt_data length] * 2];
-    for (int i=0; i<[encrypt_data length]; ++i) {
-        [hexString appendFormat:@"%02lX", (unsigned long)dataBytes[i]];
-    }
-    return hexString;
-}
 + (NSString *) encryptToBase64String:(NSData *)data key:(NSData *)key {
     return [[self encrypt:data key:key] base64EncodedStringWithOptions:0];
 }
@@ -216,6 +207,31 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
 }
 + (NSString *) encryptStringToBase64String:(NSString *)data stringKey:(NSString *)key {
     return [self encryptToBase64String:[data dataUsingEncoding:NSUTF8StringEncoding] stringKey:key];
+}
++ (NSString *) convertBytesToHex:(NSData *)encrypt_data {
+    const unsigned char * dataBytes = [encrypt_data bytes];
+    NSMutableString * hexString = [NSMutableString stringWithCapacity:[encrypt_data length] * 2];
+    for (int i=0; i<[encrypt_data length]; ++i) {
+        [hexString appendFormat:@"%02lX", (unsigned long)dataBytes[i]];
+    }
+    return hexString;
+}
++ (NSString *) encryptToHexString:(NSData *)data key:(NSData *)key {
+    NSData * encrypt_data = [self encrypt:data key:key];
+    return [self convertBytesToHex:encrypt_data];
+}
+}
++ (NSString *)encryptToHexString: (NSData *)data stringKey:(NSString *)key {
+    NSData * encrypt_data = [self encrypt:data stringKey:key];
+    return [self convertBytesToHex:encrypt_data];
+}
++ (NSString *) encryptStringToHexString:(NSString *)data key:(NSData *)key {
+    NSData * encrypt_data = [self encryptString:data key:key];
+    return [self convertBytesToHex:encrypt_data];
+}
++ (NSString *) encryptStringToHexString:(NSString *)data stringKey:(NSString *)key {
+    NSData * encrypt_data = [self encryptString:data stringKey:key];
+    return [self convertBytesToHex:encrypt_data];
 }
 + (NSData *) decrypt:(NSData *)data key:(NSData *)key {
     size_t out_len;
@@ -243,6 +259,36 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
 }
 + (NSString *) decryptBase64StringToString:(NSString *)data stringKey:(NSString *)key {
     return [self decryptBase64StringToString:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
+}
++ (NSData *) convertHexToBytes:(NSString *)hexString {
+    NSString * formatData = [hexString stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSMutableData * bytesData = [[NSMutableData alloc] init];
+    unsigned char whole_byte;
+    char byte_chars[3] = {'\0','\0','\0'};
+    int i;
+    for (i=0; i < [formatData length]/2; i++) {
+        byte_chars[0] = [formatData characterAtIndex:i*2];
+        byte_chars[1] = [formatData characterAtIndex:i*2+1];
+        whole_byte = strtol(byte_chars, NULL, 16);
+        [bytesData appendBytes:&whole_byte length:1]; 
+    }
+    return bytesData;
+}
++ (NSData *) decryptHexString:(NSString *)data key:(NSData *)key {
+    NSData * bytesData = [self convertHexToBytes:data];
+    return [self decrypt:bytesData key:key];
+}
++ (NSData *) decryptHexString:(NSString *)data stringKey:(NSString *)key {
+    NSData * bytesData = [self convertHexToBytes:data];
+    return [self decrypt:originalHashData stringKey:key];
+}
++ (NSString *) decryptHexStringToString:(NSString *)data key:(NSData *)key {
+    NSData * bytesData = [self convertHexToBytes:data];
+    return [self decryptToString: data key:key];
+}
++ (NSString *) decryptHexStringToString:(NSString *)data stringKey:(NSString *)key {
+    NSData * bytesData = [self convertHexToBytes:data];
+    return [self decryptToString: data stringKey:key];
 }
 
 @end
