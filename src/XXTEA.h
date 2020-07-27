@@ -21,6 +21,8 @@
 + (NSData *) encrypt:(NSData *)data key:(NSData *)key;
 + (NSData *) encrypt:(NSData *)data stringKey:(NSString *)key;
 
++ (NSString *)encryptWithHexString: (NSString *)data stringKey:(NSString *)key;
+
 + (NSString *) encryptToBase64String:(NSData *)data key:(NSData *)key;
 + (NSString *) encryptToBase64String:(NSData *)data stringKey:(NSString *)key;
 
