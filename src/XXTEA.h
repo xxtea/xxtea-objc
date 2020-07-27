@@ -21,8 +21,6 @@
 + (NSData *) encrypt:(NSData *)data key:(NSData *)key;
 + (NSData *) encrypt:(NSData *)data stringKey:(NSString *)key;
 
-+ (NSString *)encryptWithHexString: (NSString *)data stringKey:(NSString *)key;
-
 + (NSString *) encryptToBase64String:(NSData *)data key:(NSData *)key;
 + (NSString *) encryptToBase64String:(NSData *)data stringKey:(NSString *)key;
 
@@ -31,6 +29,14 @@
 
 + (NSString *) encryptStringToBase64String:(NSString *)data key:(NSData *)key;
 + (NSString *) encryptStringToBase64String:(NSString *)data stringKey:(NSString *)key;
+
++ (NSString *) convertBytesToHex:(NSData *)encrypt_data;
+
++ (NSString *) encryptToHexString:(NSData *)data key:(NSData *)key;
++ (NSString *) encryptToHexString:(NSData *)data stringKey:(NSString *)key;
+
++ (NSString *) encryptStringToHexString:(NSString *)data key:(NSData *)key;
++ (NSString *) encryptStringToHexString:(NSString *)data stringKey:(NSString *)key;
 
 + (NSData *) decrypt:(NSData *)data key:(NSData *)key;
 + (NSData *) decrypt:(NSData *)data stringKey:(NSString *)key;
@@ -43,6 +49,14 @@
 
 + (NSString *) decryptBase64StringToString:(NSString *)data key:(NSData *)key;
 + (NSString *) decryptBase64StringToString:(NSString *)data stringKey:(NSString *)key;
+
++ (NSData *) convertHexToBytes:(NSString *)hexString;
+
++ (NSData *) decryptHexString:(NSString *)data key:(NSData *)key;
++ (NSData *) decryptHexString:(NSString *)data stringKey:(NSString *)key;
+
++ (NSString *) decryptHexStringToString:(NSString *)data key:(NSData *)key;
++ (NSString *) decryptHexStringToString:(NSString *)data stringKey:(NSString *)key;
 
 @end
 
