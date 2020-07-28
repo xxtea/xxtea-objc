@@ -177,6 +177,8 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
     return out;
 }
 
+static char _NSData_BytesConversionString_[512] = "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff";
+
 // public functions
 
 @implementation XXTEA
@@ -209,12 +211,24 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
     return [self encryptToBase64String:[data dataUsingEncoding:NSUTF8StringEncoding] stringKey:key];
 }
 + (NSString *) convertBytesToHex:(NSData *)encrypt_data {
-    const unsigned char * dataBytes = [encrypt_data bytes];
-    NSMutableString * hexString = [NSMutableString stringWithCapacity:[encrypt_data length] * 2];
-    for (int i=0; i<[encrypt_data length]; ++i) {
-        [hexString appendFormat:@"%02lX", (unsigned long)dataBytes[i]];
+    UInt16*  mapping = (UInt16*)_NSData_BytesConversionString_;
+    register UInt16 len = [encrypt_data length];
+    char*    hexChars = (char*)malloc( sizeof(char) * (len*2) );
+    if (hexChars == NULL) {
+        [NSException raise:@"NSInternalInconsistencyException" format:@"failed malloc" arguments:nil];
+        return nil;
     }
-    return hexString;
+    register UInt16* dst = ((UInt16*)hexChars) + len-1;
+    register unsigned char* src = (unsigned char*)[encrypt_data bytes] + len-1;
+
+    while (len--) *dst-- = mapping[*src--];
+
+    NSString* retVal = [[NSString alloc] initWithBytesNoCopy:hexChars length:[encrypt_data length]*2 encoding:NSASCIIStringEncoding freeWhenDone:YES];
+    #if (!__has_feature(objc_arc))
+       return [retVal autorelease];
+    #else
+        return retVal;
+    #endif
 }
 + (NSString *) encryptToHexString:(NSData *)data key:(NSData *)key {
     NSData * encrypt_data = [self encrypt:data key:key];
@@ -260,18 +274,22 @@ static uint8_t * xxtea_ubyte_decrypt(const uint8_t * data, size_t len, const uin
     return [self decryptBase64StringToString:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
 }
 + (NSData *) convertHexToBytes:(NSString *)hexString {
-    NSString * formatData = [hexString stringByReplacingOccurrencesOfString:@" " withString:@""];
-    NSMutableData * bytesData = [[NSMutableData alloc] init];
+    NSString* string = [hexString lowercaseString];
+    NSMutableData *data= [NSMutableData new];
     unsigned char whole_byte;
     char byte_chars[3] = {'\0','\0','\0'};
-    int i;
-    for (i=0; i < [formatData length]/2; i++) {
-        byte_chars[0] = [formatData characterAtIndex:i*2];
-        byte_chars[1] = [formatData characterAtIndex:i*2+1];
+    int i = 0;
+    int length = (int) string.length;
+    while (i < length-1) {
+        char c = [string characterAtIndex:i++];
+        if (c < '0' || (c > '9' && c < 'a') || c > 'f')
+            continue;
+        byte_chars[0] = c;
+        byte_chars[1] = [string characterAtIndex:i++];
         whole_byte = strtol(byte_chars, NULL, 16);
-        [bytesData appendBytes:&whole_byte length:1]; 
+        [data appendBytes:&whole_byte length:1];
     }
-    return bytesData;
+    return data;
 }
 + (NSData *) decryptHexString:(NSString *)data key:(NSData *)key {
     NSData * bytesData = [self convertHexToBytes:data];
