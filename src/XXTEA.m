@@ -274,20 +274,28 @@ static char _NSData_BytesConversionString_[512] = "000102030405060708090a0b0c0d0
     return [self decryptBase64StringToString:data key:[key dataUsingEncoding:NSUTF8StringEncoding]];
 }
 + (NSData *) convertHexToBytes:(NSString *)hexString {
-    NSString* string = [hexString lowercaseString];
-    NSMutableData *data= [NSMutableData new];
-    unsigned char whole_byte;
-    char byte_chars[3] = {'\0','\0','\0'};
-    int i = 0;
-    int length = (int) string.length;
-    while (i < length-1) {
-        char c = [string characterAtIndex:i++];
-        if (c < '0' || (c > '9' && c < 'a') || c > 'f')
-            continue;
-        byte_chars[0] = c;
-        byte_chars[1] = [string characterAtIndex:i++];
-        whole_byte = strtol(byte_chars, NULL, 16);
-        [data appendBytes:&whole_byte length:1];
+    NSMutableData *data = [[NSMutableData alloc] init];
+    NSString *inputStr = [hexString uppercaseString];
+    NSString *hexChars = @"0123456789ABCDEF";
+    Byte b1,b2;
+    b1 = 255;
+    b2 = 255;
+    for (int i=0; i<hexString.length; i++) {
+        NSString *subStr = [inputStr substringWithRange:NSMakeRange(i, 1)];
+        NSRange loc = [hexChars rangeOfString:subStr];
+
+        if (loc.location == NSNotFound) continue;
+
+        if (255 == b1) {
+            b1 = (Byte)loc.location;
+        }else {
+            b2 = (Byte)loc.location;
+            Byte *bytes = malloc(sizeof(Byte) *1);
+            bytes[0] = ((b1<<4) & 0xf0) | (b2 & 0x0f);
+            [data appendBytes:bytes length:1];
+
+            b1 = b2 = 255;
+        }
     }
     return data;
 }
